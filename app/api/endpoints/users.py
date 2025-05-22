@@ -36,6 +36,28 @@ def process_users(users):
     return result
 
 
+@router.post("/onboarding", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+def onboarding(
+    *,
+    db: Session = Depends(get_db),
+    user_in: UserCreate
+) -> Any:
+    """
+    온보딩 정보 저장 (새 사용자만 생성)
+    """
+    # 닉네임 중복 확인
+    user = user_crud.get_user_by_nickname(db, nickname=user_in.nickname)
+    if user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="이미 사용 중인 닉네임입니다."
+        )
+        
+    # 새 사용자 생성
+    created_user = user_crud.create_user(db=db, user=user_in)
+    return process_user(created_user)
+
+
 @router.get("/{user_id}", response_model=UserResponse)
 def read_user(
     *,
@@ -102,31 +124,4 @@ def delete_user(
         )
     
     user_crud.delete_user(db=db, user_id=user_id)
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
-
-
-@router.post("/onboarding", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-def onboarding(
-    *,
-    db: Session = Depends(get_db),
-    user_in: UserCreate
-) -> Any:
-    """
-    온보딩 정보 저장
-    """
-    # 이미 존재하는 사용자인 경우 업데이트, 아닌 경우 새로 생성
-    user = user_crud.get_user_by_nickname(db, nickname=user_in.nickname)
-    
-    if user:
-        # 사용자가 이미 존재하는 경우 업데이트
-        update_data = UserUpdate(
-            gender=user_in.gender,
-            genre=user_in.genre,
-            favorite_movie=user_in.favorite_movie
-        )
-        updated_user = user_crud.update_user(db=db, user_id=user.id, user=update_data)
-        return process_user(updated_user)
-    else:
-        # 새 사용자 생성
-        created_user = user_crud.create_user(db=db, user=user_in)
-        return process_user(created_user) 
+    return Response(status_code=status.HTTP_204_NO_CONTENT) 

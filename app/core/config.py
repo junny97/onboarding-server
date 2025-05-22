@@ -6,7 +6,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     """애플리케이션 설정"""
-    API_PREFIX: str = "/api/v1"
+    API_PREFIX: str = "/api"
     DEBUG: bool = False
     ENVIRONMENT: str = "development"
     DATABASE_URL: str = "sqlite:///./onboarding.db"
