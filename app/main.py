@@ -28,3 +28,10 @@ app.include_router(api_router, prefix=settings.API_PREFIX)
 @app.get("/")
 def root():
     return {"message": "온보딩 API에 오신 것을 환영합니다!"} 
+
+@app.get("/ping")
+def ping():
+    """
+    핑 엔드포인트 - 서버 상태 확인 및 슬립 모드 방지용
+    """
+    return {"status": "ok", "message": "Server is running"} 
