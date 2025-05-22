@@ -36,30 +36,11 @@ def process_users(users):
     return result
 
 
-@router.post("/", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-def create_user(
-    *,
-    db: Session = Depends(get_db),
-    user_in: UserCreate
-) -> Any:
-    """
-    새 유저 생성
-    """
-    user = user_crud.get_user_by_nickname(db, nickname=user_in.nickname)
-    if user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="이미 사용 중인 닉네임입니다."
-        )
-    user = user_crud.create_user(db=db, user=user_in)
-    return process_user(user)
-
-
 @router.get("/{user_id}", response_model=UserResponse)
 def read_user(
     *,
     db: Session = Depends(get_db),
-    user_id: int
+    user_id: str
 ) -> Any:
     """
     ID로 유저 조회
@@ -74,24 +55,11 @@ def read_user(
     return process_user(user)
 
 
-@router.get("/", response_model=List[UserResponse])
-def read_users(
-    db: Session = Depends(get_db),
-    skip: int = 0,
-    limit: int = 100
-) -> Any:
-    """
-    모든 유저 조회
-    """
-    users = user_crud.get_users(db, skip=skip, limit=limit)
-    return process_users(users)
-
-
 @router.put("/{user_id}", response_model=UserResponse)
 def update_user(
     *,
     db: Session = Depends(get_db),
-    user_id: int,
+    user_id: str,
     user_in: UserUpdate
 ) -> Any:
     """
@@ -121,7 +89,7 @@ def update_user(
 def delete_user(
     *,
     db: Session = Depends(get_db),
-    user_id: int
+    user_id: str
 ) -> Any:
     """
     유저 삭제

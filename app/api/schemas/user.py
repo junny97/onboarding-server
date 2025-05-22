@@ -22,8 +22,15 @@ class UserBase(BaseModel):
     @field_validator('gender')
     @classmethod
     def gender_must_be_valid(cls, v):
-        if v and v not in ['male', 'female']:
-            raise ValueError('성별은 male 또는 female이어야 합니다')
+        if v and v not in ['남성', '여성']:
+            raise ValueError('성별은 남성 또는 여성이어야 합니다')
+        return v
+    
+    @field_validator('genre')
+    @classmethod
+    def genre_must_not_be_empty(cls, v):
+        if not v or (len(v) == 1 and v[0] == ''):
+            raise ValueError('최소 하나의 장르를 선택해야 합니다')
         return v
 
 
@@ -53,14 +60,21 @@ class UserUpdate(BaseModel):
     @field_validator('gender')
     @classmethod
     def gender_must_be_valid(cls, v):
-        if v is not None and v not in ['male', 'female', '']:
-            raise ValueError('성별은 male, female 또는 빈 값이어야 합니다')
+        if v is not None and v not in ['남성', '여성', '']:
+            raise ValueError('성별은 남성, 여성 또는 빈 값이어야 합니다')
+        return v
+    
+    @field_validator('genre')
+    @classmethod
+    def genre_must_be_valid(cls, v):
+        if v is not None and (not v or (len(v) == 1 and v[0] == '')):
+            raise ValueError('장르 목록이 제공된 경우 최소 하나의 장르가 있어야 합니다')
         return v
 
 
 class UserInDB(UserBase):
     """데이터베이스 유저 스키마"""
-    id: int
+    id: str
     
     class Config:
         from_attributes = True

@@ -1,13 +1,14 @@
 import json
 from typing import List, Optional, Dict, Any
 
+import nanoid
 from sqlalchemy.orm import Session
 
 from app.api.schemas.user import UserCreate, UserUpdate
 from app.models.user import User
 
 
-def get_user(db: Session, user_id: int) -> Optional[User]:
+def get_user(db: Session, user_id: str) -> Optional[User]:
     """ID로 유저 조회"""
     return db.query(User).filter(User.id == user_id).first()
 
@@ -27,6 +28,7 @@ def create_user(db: Session, user: UserCreate) -> User:
     genre_json = json.dumps(user.genre)  # 장르 목록을 JSON 문자열로 변환
     
     db_user = User(
+        id=nanoid.generate(),
         nickname=user.nickname,
         gender=user.gender,
         genre=genre_json,
@@ -38,7 +40,7 @@ def create_user(db: Session, user: UserCreate) -> User:
     return db_user
 
 
-def update_user(db: Session, user_id: int, user: UserUpdate) -> Optional[User]:
+def update_user(db: Session, user_id: str, user: UserUpdate) -> Optional[User]:
     """유저 정보 업데이트"""
     db_user = get_user(db, user_id)
     if not db_user:
@@ -58,7 +60,7 @@ def update_user(db: Session, user_id: int, user: UserUpdate) -> Optional[User]:
     return db_user
 
 
-def delete_user(db: Session, user_id: int) -> bool:
+def delete_user(db: Session, user_id: str) -> bool:
     """유저 삭제"""
     db_user = get_user(db, user_id)
     if not db_user:
