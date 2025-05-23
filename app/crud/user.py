@@ -1,7 +1,6 @@
 import json
 from typing import List, Optional, Dict, Any
 
-import nanoid
 from sqlalchemy.orm import Session
 
 from app.api.schemas.user import UserCreate, UserUpdate
@@ -37,7 +36,6 @@ def create_user(db: Session, user: UserCreate) -> User:
             genre_json = "[]"
     
     db_user = User(
-        id=nanoid.generate(),
         nickname=user.nickname,
         gender=user.gender,
         genre=genre_json,
