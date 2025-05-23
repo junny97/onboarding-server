@@ -72,7 +72,7 @@ def onboarding(
 def read_user(
     *,
     db: Session = Depends(get_db),
-    user_id: str
+    user_id: int
 ) -> Any:
     """
     ID로 유저 조회
@@ -91,7 +91,7 @@ def read_user(
 def update_user(
     *,
     db: Session = Depends(get_db),
-    user_id: str,
+    user_id: int,
     user_in: UserUpdate
 ) -> Any:
     """
@@ -121,7 +121,7 @@ def update_user(
 def delete_user(
     *,
     db: Session = Depends(get_db),
-    user_id: str
+    user_id: int
 ) -> Any:
     """
     유저 삭제

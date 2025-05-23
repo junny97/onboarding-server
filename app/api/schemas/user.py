@@ -74,7 +74,7 @@ class UserUpdate(BaseModel):
 
 class UserInDB(UserBase):
     """데이터베이스 유저 스키마"""
-    id: str
+    id: int
     
     class Config:
         from_attributes = True
