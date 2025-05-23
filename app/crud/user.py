@@ -25,7 +25,8 @@ def get_users(db: Session, skip: int = 0, limit: int = 100) -> List[User]:
 
 def create_user(db: Session, user: UserCreate) -> User:
     """새 유저 생성"""
-    genre_json = json.dumps(user.genre)  # 장르 목록을 JSON 문자열로 변환
+    # 장르 목록을 JSON 문자열로 변환 - 유니코드 이스케이프 처리 안함
+    genre_json = json.dumps(user.genre, ensure_ascii=False)
     
     db_user = User(
         id=nanoid.generate(),
@@ -48,9 +49,9 @@ def update_user(db: Session, user_id: str, user: UserUpdate) -> Optional[User]:
     
     update_data = user.model_dump(exclude_unset=True)
     
-    # genre 필드가 있으면 JSON 문자열로 변환
+    # genre 필드가 있으면 JSON 문자열로 변환 - 유니코드 이스케이프 처리 안함
     if "genre" in update_data:
-        update_data["genre"] = json.dumps(update_data["genre"])
+        update_data["genre"] = json.dumps(update_data["genre"], ensure_ascii=False)
     
     for key, value in update_data.items():
         setattr(db_user, key, value)
