@@ -21,9 +21,19 @@ def process_user(user):
     # genre 필드가 JSON 문자열이므로 파이썬 리스트로 변환
     if user.genre:
         try:
-            user.genre = json.loads(user.genre)
+            # 이미 리스트인 경우 처리
+            if isinstance(user.genre, list):
+                pass
+            # 문자열이 아닌 다른 타입인 경우 빈 리스트로 처리
+            elif not isinstance(user.genre, str):
+                user.genre = []
+            # JSON 문자열 파싱 시도
+            else:
+                user.genre = json.loads(user.genre)
         except (json.JSONDecodeError, TypeError):
             user.genre = []
+    else:
+        user.genre = []
     
     return user
 
