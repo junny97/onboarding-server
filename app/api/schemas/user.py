@@ -1,14 +1,14 @@
 import json
 from typing import List, Optional
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, Field
 
 
 class UserBase(BaseModel):
     """기본 유저 스키마"""
-    nickname: str
-    gender: Optional[str] = ""
-    genre: Optional[List[str]] = []
-    favorite_movie: Optional[str] = ""
+    nickname: str = Field(..., description="사용자 닉네임", example="케쉬")
+    gender: str = Field(..., description="성별 (남성 또는 여성)", example="남성")
+    genre: List[str] = Field(..., description="선호 장르 목록", example=["로맨스", "코미디"])
+    favorite_movie: Optional[str] = Field("", description="좋아하는 영화", example="어바웃타임")
 
     @field_validator('nickname')
     @classmethod
@@ -22,7 +22,7 @@ class UserBase(BaseModel):
     @field_validator('gender')
     @classmethod
     def gender_must_be_valid(cls, v):
-        if v and v not in ['남성', '여성']:
+        if not v or v not in ['남성', '여성']:
             raise ValueError('성별은 남성 또는 여성이어야 합니다')
         return v
     
@@ -41,10 +41,10 @@ class UserCreate(UserBase):
 
 class UserUpdate(BaseModel):
     """유저 업데이트 스키마"""
-    nickname: Optional[str] = None
-    gender: Optional[str] = None
-    genre: Optional[List[str]] = None
-    favorite_movie: Optional[str] = None
+    nickname: Optional[str] = Field(None, description="사용자 닉네임", example="케쉬")
+    gender: Optional[str] = Field(None, description="성별 (남성 또는 여성)", example="남성")
+    genre: Optional[List[str]] = Field(None, description="선호 장르 목록", example=["로맨스", "코미디"])
+    favorite_movie: Optional[str] = Field(None, description="좋아하는 영화", example="어바웃타임")
 
     @field_validator('nickname')
     @classmethod
@@ -60,8 +60,8 @@ class UserUpdate(BaseModel):
     @field_validator('gender')
     @classmethod
     def gender_must_be_valid(cls, v):
-        if v is not None and v not in ['남성', '여성', '']:
-            raise ValueError('성별은 남성, 여성 또는 빈 값이어야 합니다')
+        if v is not None and v not in ['남성', '여성']:
+            raise ValueError('성별은 남성 또는 여성이어야 합니다')
         return v
     
     @field_validator('genre')
@@ -74,7 +74,7 @@ class UserUpdate(BaseModel):
 
 class UserInDB(UserBase):
     """데이터베이스 유저 스키마"""
-    id: int
+    id: int = Field(..., description="사용자 고유 ID", example=1)
     
     class Config:
         from_attributes = True
